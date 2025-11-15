@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NPM Install 测试页面</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .success { color: #28a745; }
+        .info { color: #17a2b8; }
+        .card { 
+            border: 1px solid #ddd; 
+            padding: 20px; 
+            margin: 10px 0; 
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 NPM + GitHub Actions 测试成功！</h1>
+        <p>这个页面通过 GitHub Actions 自动部署</p>
+    </div>
+    
+    <div class="card">
+        <h2>📦 NPM 环境信息</h2>
+        <p><strong>Node.js 版本:</strong> v18.20.8</p>
+        <p><strong>NPM 版本:</strong> 未知</p>
+        <p><strong>运行系统:</strong> linux</p>
+    </div>
+    
+    <div class="card">
+        <h2>🔑 极验配置状态</h2>
+        <p><strong>GEETEST_ID:</strong> <span class="success">✅ 已正确配置</span></p>
+        <p><strong>GEETEST_KEY:</strong> <span class="success">✅ 已正确配置</span></p>
+        <p><em>Secrets 在 GitHub Actions 中安全存储</em></p>
+    </div>
+    
+    <div class="card">
+        <h2>📊 构建详情</h2>
+        <p><strong>构建时间:</strong> <span id="buildTime"></span></p>
+        <p><strong>提交哈希:</strong> c4cef5b8880f6aecbecf3e744788534947ec8b9c</p>
+        <p><strong>触发分支:</strong> refs/heads/main</p>
+    </div>
+    
+    <div class="card">
+        <h2>🔗 其他页面</h2>
+        <p><a href="/">查看主页面 (index.html)</a></p>
+        <p><a href="https://github.com/Zhuangjiunanp/Zhuangjiunanp.github.io">查看源代码</a></p>
+    </div>
+    
+    <script>
+        document.getElementById('buildTime').textContent = new Date().toLocaleString();
+        // 添加一些交互效果
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseover', function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+            });
+            card.addEventListener('mouseout', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
