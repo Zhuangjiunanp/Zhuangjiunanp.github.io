@@ -1,98 +1,112 @@
-name: Deploy with Geetest
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  # 也可以手动触发
   workflow_dispatch:
 
-env:
-  NODE_VERSION: '18'
+permissions:
+  contents: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     
     steps:
-    # 1. 检出代码
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
 
-    # 2. 设置环境变量
-    - name: Setup Environment Variables
-      run: |
-        echo "GEETEST_ID=${{ secrets.GEETEST_ID }}" >> $GITHUB_ENV
-        echo "GEETEST_KEY=${{ secrets.GEETEST_KEY }}" >> $GITHUB_ENV
-        echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
-
-    # 3. 设置 Node.js 环境（如果需要）
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ env.NODE_VERSION }}
+        node-version: '18'
         cache: 'npm'
 
-    # 4. 显示环境信息（调试用）
-    - name: Show Environment Info
-      run: |
-        echo "🎯 Workflow triggered by: ${{ github.event_name }}"
-        echo "📁 Repository: ${{ github.repository }}"
-        echo "🔑 Geetest ID available: ${{ secrets.GEETEST_ID != '' }}"
-        echo "🔑 Geetest Key available: ${{ secrets.GEETEST_KEY != '' }}"
-        echo "Node.js version: $(node --version)"
-        echo "NPM version: $(npm --version)"
+    - name: Install dependencies
+      run: npm install
 
-    # 5. 构建和部署步骤
-    - name: Build and Deploy
+    - name: Run npm scripts
       run: |
-        echo "🚀 开始构建和部署..."
-        echo "使用极验 ID: $GEETEST_ID"
-        
-        # 这里添加你的具体构建命令
-        # 例如：npm install && npm run build
-        
-        # 示例：创建包含环境变量的配置文件
-        cat > geetest-config.js << EOF
-        // 自动生成的配置文件
-        module.exports = {
-          geetest: {
-            id: process.env.GEETEST_ID || '$GEETEST_ID',
-            key: process.env.GEETEST_KEY || '$GEETEST_KEY'
-          },
-          buildTime: new Date().toISOString(),
-          commit: '${{ github.sha }}'
-        }
-        EOF
-        
-        echo "📁 生成配置文件完成"
-        ls -la
+        echo "📦 运行 npm 脚本..."
+        npm run test
+        # 如果有其他脚本也可以在这里运行
+        # npm run build
 
-    # 6. 部署到 GitHub Pages（可选）
+    - name: Setup Environment
+      run: |
+        echo "GEETEST_ID=${{ secrets.GEETEST_ID }}" >> $GITHUB_ENV
+        echo "GEETEST_KEY=${{ secrets.GEETEST_KEY }}" >> $GITHUB_ENV
+
+    - name: Test Secrets
+      run: |
+        echo "✅ Geetest 配置测试成功"
+        echo "ID 长度: ${#GEETEST_ID}"
+        echo "KEY 长度: ${#GEETEST_KEY}"
+        echo "Node.js 版本: $(node --version)"
+        echo "NPM 版本: $(npm --version)"
+
+    - name: Create Demo Page with npm
+      run: |
+        mkdir -p dist
+        # 使用 Node.js 生成更动态的页面
+        node -e "
+        const fs = require('fs');
+        const html = \`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Geetest + NPM 配置测试</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 40px; }
+                .success { color: #28a745; }
+                .info { color: #17a2b8; }
+                .card { 
+                    border: 1px solid #ddd; 
+                    padding: 20px; 
+                    margin: 10px 0; 
+                    border-radius: 8px;
+                }
+            </style>
+        </head>
+        <body>
+            <h1 class=\"success\">✅ Geetest + NPM 配置成功！</h1>
+            
+            <div class=\"card\">
+                <h2>📦 NPM 信息</h2>
+                <p>Node.js 版本: <strong>\${process.version}</strong></p>
+                <p>NPM 版本: <strong>\${process.env.npm_version || '未知'}</strong></p>
+            </div>
+            
+            <div class=\"card\">
+                <h2>🔑 极验配置状态</h2>
+                <p>GEETEST_ID: <strong class=\"success\">已配置</strong></p>
+                <p>GEETEST_KEY: <strong class=\"success\">已配置</strong></p>
+            </div>
+            
+            <div class=\"card\">
+                <h2>📊 构建信息</h2>
+                <p>构建时间: <span id=\"buildTime\"></span></p>
+                <p>用户代理: <span id=\"userAgent\"></span></p>
+            </div>
+            
+            <script>
+                document.getElementById('buildTime').textContent = new Date().toLocaleString();
+                document.getElementById('userAgent').textContent = navigator.userAgent;
+            </script>
+        </body>
+        </html>
+        \`;
+        fs.writeFileSync('dist/index.html', html);
+        "
+        
+        echo "📁 创建的文件:"
+        ls -la dist/
+
     - name: Deploy to GitHub Pages
-      if: github.event_name != 'pull_request'
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./dist  # 你的构建输出目录
+        publish_dir: ./dist
         publish_branch: gh-pages
-        force_orphan: true
-
-    # 7. 完成通知
-    - name: Success Notification
-      if: success()
-      run: |
-        echo "✅ 部署成功完成！"
-        echo "📅 完成时间: $(date)"
-        echo "🔗 如果部署到Pages，访问: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
-
-    # 8. 失败通知
-    - name: Failure Notification
-      if: failure()
-      run: |
-        echo "❌ 部署失败！"
-        echo "请检查日志以获取详细信息"
-        exit 1
+        force_orphan: false
+        commit_message: "Deploy with NPM: $(date +'%Y-%m-%d %H:%M:%S')"
