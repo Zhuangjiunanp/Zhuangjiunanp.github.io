@@ -1,8 +1,26 @@
 {
-  "name": "geetest-config",
+  "name": "geetest-real-validation",
   "version": "1.0.0",
-  "description": "Geetest configuration",
+  "description": "Real Geetest validation integration with GitHub Actions",
+  "main": "validate-geetest.js",
   "scripts": {
-    "test": "echo 'Geetest config check'"
-  }
+    "test": "node validate-geetest.js",
+    "validate": "node validate-geetest.js",
+    "sdk-test": "node test-geetest-sdk.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "node-fetch": "^2.6.7",
+    "geetest": "^4.1.2"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "geetest",
+    "captcha",
+    "validation",
+    "github-actions"
+  ]
 }
