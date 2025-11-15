@@ -45,17 +45,17 @@ jobs:
         echo "Node.js 版本: $(node --version)"
         echo "NPM 版本: $(npm --version)"
 
-    - name: Create Demo Page with npm
+    - name: Create npminstall.html
       run: |
         mkdir -p dist
-        # 使用 Node.js 生成更动态的页面
+        # 创建 npminstall.html 而不是 index.html
         node -e "
         const fs = require('fs');
         const html = \`
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Geetest + NPM 配置测试</title>
+            <title>NPM Install 测试页面</title>
             <style>
                 body { font-family: Arial, sans-serif; margin: 40px; }
                 .success { color: #28a745; }
@@ -65,38 +65,68 @@ jobs:
                     padding: 20px; 
                     margin: 10px 0; 
                     border-radius: 8px;
+                    background: #f8f9fa;
+                }
+                .header { 
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 30px;
+                    border-radius: 10px;
+                    text-align: center;
                 }
             </style>
         </head>
         <body>
-            <h1 class=\"success\">✅ Geetest + NPM 配置成功！</h1>
+            <div class=\"header\">
+                <h1>🚀 NPM + GitHub Actions 测试成功！</h1>
+                <p>这个页面通过 GitHub Actions 自动部署</p>
+            </div>
             
             <div class=\"card\">
-                <h2>📦 NPM 信息</h2>
-                <p>Node.js 版本: <strong>\${process.version}</strong></p>
-                <p>NPM 版本: <strong>\${process.env.npm_version || '未知'}</strong></p>
+                <h2>📦 NPM 环境信息</h2>
+                <p><strong>Node.js 版本:</strong> \${process.version}</p>
+                <p><strong>NPM 版本:</strong> \${process.env.npm_version || '未知'}</p>
+                <p><strong>运行系统:</strong> \${process.platform}</p>
             </div>
             
             <div class=\"card\">
                 <h2>🔑 极验配置状态</h2>
-                <p>GEETEST_ID: <strong class=\"success\">已配置</strong></p>
-                <p>GEETEST_KEY: <strong class=\"success\">已配置</strong></p>
+                <p><strong>GEETEST_ID:</strong> <span class=\"success\">✅ 已正确配置</span></p>
+                <p><strong>GEETEST_KEY:</strong> <span class=\"success\">✅ 已正确配置</span></p>
+                <p><em>Secrets 在 GitHub Actions 中安全存储</em></p>
             </div>
             
             <div class=\"card\">
-                <h2>📊 构建信息</h2>
-                <p>构建时间: <span id=\"buildTime\"></span></p>
-                <p>用户代理: <span id=\"userAgent\"></span></p>
+                <h2>📊 构建详情</h2>
+                <p><strong>构建时间:</strong> <span id=\"buildTime\"></span></p>
+                <p><strong>提交哈希:</strong> ${{ github.sha }}</p>
+                <p><strong>触发分支:</strong> ${{ github.ref }}</p>
+            </div>
+            
+            <div class=\"card\">
+                <h2>🔗 其他页面</h2>
+                <p><a href=\"/\">查看主页面 (index.html)</a></p>
+                <p><a href=\"https://github.com/${{ github.repository }}\">查看源代码</a></p>
             </div>
             
             <script>
                 document.getElementById('buildTime').textContent = new Date().toLocaleString();
-                document.getElementById('userAgent').textContent = navigator.userAgent;
+                // 添加一些交互效果
+                document.querySelectorAll('.card').forEach(card => {
+                    card.addEventListener('mouseover', function() {
+                        this.style.transform = 'translateY(-2px)';
+                        this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+                    });
+                    card.addEventListener('mouseout', function() {
+                        this.style.transform = 'translateY(0)';
+                        this.style.boxShadow = 'none';
+                    });
+                });
             </script>
         </body>
         </html>
         \`;
-        fs.writeFileSync('dist/index.html', html);
+        fs.writeFileSync('dist/npminstall.html', html);
         "
         
         echo "📁 创建的文件:"
@@ -109,4 +139,14 @@ jobs:
         publish_dir: ./dist
         publish_branch: gh-pages
         force_orphan: false
-        commit_message: "Deploy with NPM: $(date +'%Y-%m-%d %H:%M:%S')"
+        commit_message: "Deploy: npminstall.html with NPM $(date +'%Y-%m-%d %H:%M')"
+
+    - name: Show Access URLs
+      run: |
+        echo "🎯 访问地址:"
+        echo "主页面: https://${{ github.repository_owner }}.github.io"
+        echo "NPM测试页面: https://${{ github.repository_owner }}.github.io/npminstall.html"
+        echo ""
+        echo "📝 说明:"
+        echo "- 主页面显示你原来的 index.html"
+        echo "- NPM测试页面显示这个工作流生成的内容"
