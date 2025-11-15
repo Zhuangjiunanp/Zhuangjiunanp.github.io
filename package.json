@@ -1,0 +1,8 @@
+{
+  "name": "geetest-config",
+  "version": "1.0.0",
+  "description": "Geetest configuration",
+  "scripts": {
+    "test": "echo 'Geetest config check'"
+  }
+}
