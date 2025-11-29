@@ -44,6 +44,12 @@
   </div>
 
   <script>
+    var manualFileList = [
+      {name: 'vocabulary.txt', size: 1250, type: 'file'},
+      {name: 'grammar.pdf', size: 156000, type: 'file'},
+      {name: 'reading/', size: 0, type: 'dir'},
+      {name: 'audio/', size: 0, type: 'dir'}
+    ];
     
     function loadFileList() {
       var apiUrl = 'https://api.github.com/repos/zhuangjiunanp/zhuangjiunanp.github.io/contents/maven/Self_created_apk_mc27_warehouse/Enable_GeckoView_to_successfully_use_the_immersive_translation_plugin_(.XPI)/2025-11-29-15:45:30.500';
@@ -100,11 +106,14 @@
     }
     
     function getIconUrl(extension) {
+        var baseUrl = 'https://zhuangjiunanp.github.io/global_package/file_png/';
       if (!extension) {
-        return 'https://zhuangjiunanp.github.io/data_packet/file_png/file.svg';
+        return baseUrl + 'file.svg';
       }
-      return 'https://zhuangjiunanp.github.io/data_packet/file_png/' + extension + '.svg';
+      var specificIcon = baseUrl + extension.toLowerCase() + '.svg';
+      return specificIcon; // 让浏览器尝试加载，加载失败时由 onerror 处理
     }
+
     
     function formatSize(bytes) {
       if (!bytes || bytes === 0) return '-';
