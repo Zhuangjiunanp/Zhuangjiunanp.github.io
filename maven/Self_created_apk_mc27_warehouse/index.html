@@ -44,15 +44,9 @@
   </div>
 
   <script>
-    var manualFileList = [
-      {name: 'vocabulary.txt', size: 1250, type: 'file'},
-      {name: 'grammar.pdf', size: 156000, type: 'file'},
-      {name: 'reading/', size: 0, type: 'dir'},
-      {name: 'audio/', size: 0, type: 'dir'}
-    ];
     
     function loadFileList() {
-      var apiUrl = 'https://api.github.com/repos/zhuangjiunanp/zhuangjiunanp.github.io/contents/english';
+      var apiUrl = 'https://api.github.com/repos/zhuangjiunanp/zhuangjiunanp.github.io/contents/maven/Self_created_apk_mc27_warehouse/and';
       var xhr = new XMLHttpRequest();
       
       xhr.onreadystatechange = function() {
