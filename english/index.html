@@ -8,10 +8,11 @@
 </head>
 
 <body>
-  <div id="navigation">
-    <h1>English Resources</h1>
+  <h1>English Resources</h1>
+  
+  <div id="listing">
+    <pre>Loading file list...</pre>
   </div>
-  <div id="listing"></div>
 
   <script>
     // GitHub仓库信息
@@ -32,7 +33,7 @@
             var files = JSON.parse(xhr.responseText);
             renderFileList(files);
           } else {
-            listingEl.innerHTML = '<p>Error loading file list</p>';
+            listingEl.innerHTML = '<pre>Error loading file list</pre>';
           }
         }
       };
@@ -41,51 +42,36 @@
       xhr.send();
     }
     
-    // 渲染文件列表
+    // 渲染文件列表（pre格式）
     function renderFileList(files) {
       var listingEl = document.getElementById('listing');
-      var html = '';
+      var html = '<pre>';
       
-      // 创建表格头部
-      html += '<table>';
-      html += '<tr>';
-      html += '<th>Name</th>';
-      html += '<th>Last Modified</th>';
-      html += '<th>Size</th>';
-      html += '</tr>';
+      // 表头
+      html += 'Name'.padEnd(50) + 'Last Modified'.padEnd(20) + 'Size\n';
+      html += '-'.repeat(80) + '\n';
       
-      // 添加文件夹行（上级目录）
-      html += '<tr>';
-      html += '<td><a href="../">../</a></td>';
-      html += '<td>-</td>';
-      html += '<td>-</td>';
-      html += '</tr>';
+      // 上级目录
+      html += '<a href="../">../</a>\n';
       
-      // 添加文件行
+      // 文件列表
       files.forEach(function(item) {
         if (item.name !== 'index.html') {
           var date = new Date(item.updated_at || item.created_at);
           var dateStr = date.toLocaleDateString();
-          var timeStr = date.toLocaleTimeString();
-          var size = formatSize(item.size);
+          var name = item.type === 'dir' ? item.name + '/' : item.name;
+          var size = item.size ? formatSize(item.size) : '-';
           
-          html += '<tr>';
-          html += '<td>';
+          // 创建链接
+          var link = '<a href="' + (item.type === 'dir' ? name : item.name) + '">' + name + '</a>';
           
-          if (item.type === 'dir') {
-            html += '<a href="' + item.name + '/">' + item.name + '/</a>';
-          } else {
-            html += '<a href="' + item.name + '">' + item.name + '</a>';
-          }
-          
-          html += '</td>';
-          html += '<td>' + dateStr + ' ' + timeStr + '</td>';
-          html += '<td>' + size + '</td>';
-          html += '</tr>';
+          // 格式化行
+          var line = link.padEnd(50) + dateStr.padEnd(20) + size;
+          html += line + '\n';
         }
       });
       
-      html += '</table>';
+      html += '</pre>';
       listingEl.innerHTML = html;
     }
     
@@ -104,43 +90,6 @@
       window.attachEvent('onload', loadFileList);
     }
   </script>
-
-  <style>
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 20px;
-    }
-    
-    th, td {
-      text-align: left;
-      padding: 8px;
-      border-bottom: 1px solid #ddd;
-    }
-    
-    th {
-      border-bottom: 2px solid #ddd;
-    }
-    
-    a {
-      text-decoration: none;
-      color: #000;
-    }
-    
-    a:hover {
-      text-decoration: underline;
-    }
-    
-    body {
-      font-family: monospace;
-      margin: 40px;
-    }
-    
-    h1 {
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 10px;
-    }
-  </style>
 </body>
 
 </html>
