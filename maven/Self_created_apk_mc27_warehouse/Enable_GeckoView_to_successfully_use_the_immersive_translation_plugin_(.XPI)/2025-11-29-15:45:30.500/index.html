@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>English Resources</title>
+  <style>
+    body {
+      font-family: monospace;
+      margin: 40px;
+      line-height: 1.4;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    a {
+      text-decoration: none;
+      color: #0000EE;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .file-icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    .folder-icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      vertical-align: middle;
+      visibility: hidden; /* 隐藏文件夹图标但保留位置 */
+    }
+  </style>
+</head>
+
+<body>
+  <h1>English Resources</h1>
+  
+  <div id="listing">
+    <pre>Loading file list...</pre>
+  </div>
+
+  <script>
+    
+    function loadFileList() {
+      var apiUrl = 'https://api.github.com/repos/zhuangjiunanp/zhuangjiunanp.github.io/contents/maven/Self_created_apk_mc27_warehouse/Enable_GeckoView_to_successfully_use_the_immersive_translation_plugin_(.XPI)/2025-11-29-15:45:30.500';
+      var xhr = new XMLHttpRequest();
+      
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            var files = JSON.parse(xhr.responseText);
+            renderFileList(files);
+          } else {
+            console.log('API failed, using manual list');
+            renderFileList(manualFileList);
+          }
+        }
+      };
+      
+      xhr.open('GET', apiUrl, true);
+      xhr.send();
+    }
+    
+    function renderFileList(files) {
+      var html = '<pre>';
+      html += 'Name'.padEnd(50) + 'Size\n';
+      html += '-'.repeat(60) + '\n';
+      html += '<a href="../">../</a>\n';
+      
+      files.forEach(function(file) {
+        if (file.name !== 'index.html') {
+          var size = file.size ? formatSize(file.size) : '-';
+          var path = file.name;
+          
+          if (file.type === 'dir') {
+            // 文件夹：显示空白图标占位，但有链接
+            html += '<img src="" alt="" class="folder-icon">';
+            html += '<a href="' + path + '">' + path + '</a>'.padEnd(50) + size + '\n';
+          } else {
+            // 文件：显示对应后缀的图标
+            var extension = getFileExtension(file.name);
+            var iconUrl = getIconUrl(extension);
+            html += '<img src="' + iconUrl + '" alt="' + extension + '" class="file-icon" onerror="this.src=\'https://zhuangjiunanp.github.io/datapackage/file_png/file.png\'">';
+            html += '<a href="' + path + '">' + path + '</a>'.padEnd(50) + size + '\n';
+          }
+        }
+      });
+      
+      html += '</pre>';
+      document.getElementById('listing').innerHTML = html;
+    }
+    
+    function getFileExtension(filename) {
+      var parts = filename.split('.');
+      return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : '';
+    }
+    
+    function getIconUrl(extension) {
+      if (!extension) {
+        return 'https://zhuangjiunanp.github.io/data_packet/file_png/file.png';
+      }
+      return 'https://zhuangjiunanp.github.io/data_packet/file_png/' + extension + '.png';
+    }
+    
+    function formatSize(bytes) {
+      if (!bytes || bytes === 0) return '-';
+      var sizes = ['B', 'KB', 'MB', 'GB'];
+      var i = Math.floor(Math.log(bytes) / Math.log(1024));
+      return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+    }
+    
+    window.addEventListener('load', loadFileList);
+  </script>
+</body>
+
+</html>
