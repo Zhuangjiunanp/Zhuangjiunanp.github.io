@@ -1,48 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>English Learning Resources</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      line-height: 1.6;
-      color: #000;
-      background-color: #fff;
-    }
-    .file-list {
-      margin: 20px 0;
-    }
-    .file-item {
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
-    }
-    .file-item a {
-      text-decoration: none;
-      color: #000;
-    }
-    .file-item a:hover {
-      text-decoration: underline;
-    }
-    .loading {
-      text-align: center;
-      padding: 40px;
-    }
-  </style>
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; img-src 'self'; connect-src https://api.github.com; worker-src 'none'">
+  <title>English Resources</title>
 </head>
 
 <body>
   <div id="navigation">
-    <h1>📚 English Learning Resources</h1>
-    <p>Available files and materials:</p>
+    <h1>English Resources</h1>
   </div>
-  <div id="listing">
-    <div class="loading">Loading file list...</div>
-  </div>
+  <div id="listing"></div>
 
   <script>
     // GitHub仓库信息
@@ -50,51 +19,128 @@
     const repoName = 'zhuangjiunanp.github.io';
     const folderPath = 'english';
     
-    // 兼容IE的AJAX函数
-    function makeRequest(url, callback) {
-      var xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          callback(JSON.parse(xhr.responseText));
-        }
-      };
-      xhr.open('GET', url, true);
-      xhr.send();
-    }
-    
     // 获取文件列表
     function loadFileList() {
       var apiUrl = 'https://api.github.com/repos/' + repoOwner + '/' + repoName + '/contents/' + folderPath;
+      var xhr = new XMLHttpRequest();
       
-      makeRequest(apiUrl, function(files) {
-        var listingEl = document.getElementById('listing');
-        var html = '<div class="file-list">';
-        
-        files.forEach(function(file) {
-          if (file.name !== 'index.html' && file.type === 'file') {
-            html += '<div class="file-item">';
-            html += '<a href="' + file.name + '">' + file.name + '</a>';
-            html += ' <small>(' + (file.size / 1024).toFixed(1) + ' KB)</small>';
-            html += '</div>';
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          var listingEl = document.getElementById('listing');
+          
+          if (xhr.status === 200) {
+            var files = JSON.parse(xhr.responseText);
+            renderFileList(files);
+          } else {
+            listingEl.innerHTML = '<p>Error loading file list</p>';
           }
-        });
-        
-        html += '</div>';
-        
-        if (files.length <= 1) { // 只有index.html
-          html = '<p>No files found. Please upload files to the english folder.</p>';
         }
-        
-        listingEl.innerHTML = html;
-      });
+      };
+      
+      xhr.open('GET', apiUrl, true);
+      xhr.send();
     }
     
-    // 页面加载完成后执行
+    // 渲染文件列表
+    function renderFileList(files) {
+      var listingEl = document.getElementById('listing');
+      var html = '';
+      
+      // 创建表格头部
+      html += '<table>';
+      html += '<tr>';
+      html += '<th>Name</th>';
+      html += '<th>Last Modified</th>';
+      html += '<th>Size</th>';
+      html += '</tr>';
+      
+      // 添加文件夹行（上级目录）
+      html += '<tr>';
+      html += '<td><a href="../">../</a></td>';
+      html += '<td>-</td>';
+      html += '<td>-</td>';
+      html += '</tr>';
+      
+      // 添加文件行
+      files.forEach(function(item) {
+        if (item.name !== 'index.html') {
+          var date = new Date(item.updated_at || item.created_at);
+          var dateStr = date.toLocaleDateString();
+          var timeStr = date.toLocaleTimeString();
+          var size = formatSize(item.size);
+          
+          html += '<tr>';
+          html += '<td>';
+          
+          if (item.type === 'dir') {
+            html += '<a href="' + item.name + '/">' + item.name + '/</a>';
+          } else {
+            html += '<a href="' + item.name + '">' + item.name + '</a>';
+          }
+          
+          html += '</td>';
+          html += '<td>' + dateStr + ' ' + timeStr + '</td>';
+          html += '<td>' + size + '</td>';
+          html += '</tr>';
+        }
+      });
+      
+      html += '</table>';
+      listingEl.innerHTML = html;
+    }
+    
+    // 格式化文件大小
+    function formatSize(bytes) {
+      if (!bytes || bytes === 0) return '-';
+      var sizes = ['B', 'KB', 'MB', 'GB'];
+      var i = Math.floor(Math.log(bytes) / Math.log(1024));
+      return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+    }
+    
+    // 页面加载时执行
     if (window.addEventListener) {
       window.addEventListener('load', loadFileList);
     } else {
-      window.attachEvent('onload', loadFileList); // IE兼容
+      window.attachEvent('onload', loadFileList);
     }
   </script>
+
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    
+    th, td {
+      text-align: left;
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    th {
+      border-bottom: 2px solid #ddd;
+    }
+    
+    a {
+      text-decoration: none;
+      color: #000;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    body {
+      font-family: monospace;
+      margin: 40px;
+    }
+    
+    h1 {
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+  </style>
 </body>
+
 </html>
