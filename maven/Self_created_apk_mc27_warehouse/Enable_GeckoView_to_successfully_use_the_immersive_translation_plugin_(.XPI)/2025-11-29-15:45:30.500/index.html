@@ -84,7 +84,7 @@
             // 文件：显示对应后缀的图标
             var extension = getFileExtension(file.name);
             var iconUrl = getIconUrl(extension);
-            html += '<img src="' + iconUrl + '" alt="' + extension + '" class="file-icon" onerror="this.src=\'https://zhuangjiunanp.github.io/datapackage/file_png/file.svg\'">';
+            html += '<img src="' + iconUrl + '" alt="' + extension + '" class="file-icon" onerror="this.src=\'https://zhuangjiunanp.github.io/data_package/file_png/file.svg\'">';
             html += '<a href="' + path + '">' + path + '</a>'.padEnd(50) + size + '\n';
           }
         }
