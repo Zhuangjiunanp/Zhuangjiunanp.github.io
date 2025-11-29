@@ -5,34 +5,44 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# 添加页面写入权限
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
+# 允许一个并发部署
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
-  deploy:
+  # 构建任务
+  build:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # 上传整个仓库
+          path: '.'
+
+  # 部署任务 - 这里添加了环境配置
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    runs-on: ubuntu-latest
+    needs: build
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
-
-    - name: Create file listing
-      run: |
-        echo "📦 生成文件列表..."
-        # 创建文件列表JSON
-        find english -type f -not -path "*/.*" | grep -v ".github" > file_list.txt
-        echo "✅ 文件列表生成完成"
-        
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: .
-
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
