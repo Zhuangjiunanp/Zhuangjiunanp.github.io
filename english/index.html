@@ -5,179 +5,96 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self'; img-src 'self' https://assets.okfn.org/images/icons/ajaxload-circle.gif; connect-src https://maven-default-s3-serving-bucket-7i7fa3jmv07w.s3.amazonaws.com; worker-src 'none'">
-  <title>Mozilla Maven - English Resources</title>
+  <title>English Learning Resources</title>
   <style>
-    /* 默认样式 - 无颜色，兼容IE */
     body {
       font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
+      margin: 20px;
       line-height: 1.6;
       color: #000;
       background-color: #fff;
     }
-    
-    #navigation {
-      padding: 15px;
-      border-bottom: 1px solid #ccc;
-      background-color: #f8f8f8;
+    .file-list {
+      margin: 20px 0;
     }
-    
-    #listing {
-      padding: 15px;
-    }
-    
     .file-item {
       padding: 8px 0;
       border-bottom: 1px solid #eee;
     }
-    
     .file-item a {
       text-decoration: none;
       color: #000;
     }
-    
     .file-item a:hover {
       text-decoration: underline;
     }
-    
-    .folder-item {
-      font-weight: bold;
-      margin-top: 15px;
-    }
-    
     .loading {
       text-align: center;
-      padding: 20px;
+      padding: 40px;
     }
   </style>
 </head>
 
 <body>
   <div id="navigation">
-    <h1>English Resources</h1>
-    <p>Browse available English learning materials</p>
+    <h1>📚 English Learning Resources</h1>
+    <p>Available files and materials:</p>
   </div>
   <div id="listing">
-    <div class="loading">Loading content...</div>
+    <div class="loading">Loading file list...</div>
   </div>
 
-  <!-- 使用兼容IE的JavaScript方法 -->
   <script>
-    // 兼容IE的XMLHttpRequest封装
+    // GitHub仓库信息
+    const repoOwner = 'zhuangjiunanp';
+    const repoName = 'zhuangjiunanp.github.io';
+    const folderPath = 'english';
+    
+    // 兼容IE的AJAX函数
     function makeRequest(url, callback) {
       var xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-            callback(xhr.responseText);
-          } else {
-            console.error('Request failed: ' + xhr.status);
-            document.getElementById('listing').innerHTML = '<p>Error loading content</p>';
-          }
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          callback(JSON.parse(xhr.responseText));
         }
       };
       xhr.open('GET', url, true);
       xhr.send();
     }
-
-    // 解析目录结构
-    function parseDirectoryListing(html) {
-      var parser = new DOMParser();
-      var doc = parser.parseFromString(html, 'text/html');
-      var links = doc.querySelectorAll('a');
-      var files = [];
-      var folders = [];
+    
+    // 获取文件列表
+    function loadFileList() {
+      var apiUrl = 'https://api.github.com/repos/' + repoOwner + '/' + repoName + '/contents/' + folderPath;
       
-      for (var i = 0; i < links.length; i++) {
-        var href = links[i].getAttribute('href');
-        var text = links[i].textContent.trim();
+      makeRequest(apiUrl, function(files) {
+        var listingEl = document.getElementById('listing');
+        var html = '<div class="file-list">';
         
-        // 跳过上级目录链接和当前目录链接
-        if (href === '../' || href === './' || text === 'Parent Directory') {
-          continue;
+        files.forEach(function(file) {
+          if (file.name !== 'index.html' && file.type === 'file') {
+            html += '<div class="file-item">';
+            html += '<a href="' + file.name + '">' + file.name + '</a>';
+            html += ' <small>(' + (file.size / 1024).toFixed(1) + ' KB)</small>';
+            html += '</div>';
+          }
+        });
+        
+        html += '</div>';
+        
+        if (files.length <= 1) { // 只有index.html
+          html = '<p>No files found. Please upload files to the english folder.</p>';
         }
         
-        // 区分文件和文件夹
-        if (href.endsWith('/')) {
-          folders.push({
-            name: text,
-            path: href
-          });
-        } else if (!href.includes('?') && text !== '') {
-          files.push({
-            name: text,
-            path: href
-          });
-        }
-      }
-      
-      return {
-        files: files,
-        folders: folders
-      };
-    }
-
-    // 渲染目录列表
-    function renderDirectoryListing(data) {
-      var listingEl = document.getElementById('listing');
-      var html = '';
-      
-      // 渲染文件夹
-      if (data.folders.length > 0) {
-        html += '<div class="folder-list">';
-        for (var i = 0; i < data.folders.length; i++) {
-          html += '<div class="folder-item">';
-          html += '<a href="' + data.folders[i].path + '">' + data.folders[i].name + '</a>';
-          html += '</div>';
-        }
-        html += '</div>';
-      }
-      
-      // 渲染文件
-      if (data.files.length > 0) {
-        html += '<div class="file-list">';
-        for (var j = 0; j < data.files.length; j++) {
-          html += '<div class="file-item">';
-          html += '<a href="' + data.files[j].path + '">' + data.files[j].name + '</a>';
-          html += '</div>';
-        }
-        html += '</div>';
-      }
-      
-      if (data.folders.length === 0 && data.files.length === 0) {
-        html = '<p>No files found in this directory.</p>';
-      }
-      
-      listingEl.innerHTML = html;
-    }
-
-    // 页面加载完成后执行
-    document.addEventListener('DOMContentLoaded', function() {
-      // 获取当前路径
-      var currentPath = window.location.pathname;
-      var basePath = '/english/';
-      
-      // 如果不在根目录，调整路径
-      if (!currentPath.endsWith('/')) {
-        currentPath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
-      }
-      
-      // 构建目录列表URL
-      var listingUrl = currentPath;
-      if (!listingUrl.endsWith('/')) {
-        listingUrl += '/';
-      }
-      
-      // 获取目录内容
-      makeRequest(listingUrl, function(response) {
-        var data = parseDirectoryListing(response);
-        renderDirectoryListing(data);
+        listingEl.innerHTML = html;
       });
-    });
+    }
+    
+    // 页面加载完成后执行
+    if (window.addEventListener) {
+      window.addEventListener('load', loadFileList);
+    } else {
+      window.attachEvent('onload', loadFileList); // IE兼容
+    }
   </script>
 </body>
-
 </html>
