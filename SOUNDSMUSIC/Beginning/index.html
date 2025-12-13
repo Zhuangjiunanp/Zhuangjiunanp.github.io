@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    <link rel="icon" href="https://zhuangjiunanp.github.io/global_package/TPYS.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>name</title>
+    <link href="https://zhuangjiunanp.github.io/global_package/Style.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2196f3;
+            --highlight-bg: #e3f2fd;
+        }
+        body {
+            font-family: "微软雅黑", Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        audio {
+            width: 100%;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .lyrics-box {
+            height: 400px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overscroll-behavior: contain;
+            touch-action: pan-y;
+            -webkit-overflow-scrolling: touch;
+        }
+        .lyric-line {
+            padding: 12px;
+            margin: 8px 0;
+            line-height: 1.6;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+            -webkit-text-size-adjust: 100%;
+        }
+        .lyric-line.highlight {
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            background: var(--highlight-bg);
+            transform: translateX(10px);
+        }
+        .song-info {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .song-info img {
+            --base-size: 60px;
+            height: var(--base-size);
+            width: auto;
+            margin-right: 15px;
+            object-fit: cover;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .song-details {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+        .song-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
+        }
+        .song-separator {
+            font-size: 1.5rem;
+            margin: 0 5px;
+            display: none;
+        }
+        .artist-name {
+            font-size: 1.2rem;
+            color: #666;
+            margin: 0;
+        }
+        
+        /* 播放控制区域样式 */
+        .playback-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        .control-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+            white-space: nowrap;
+        }
+        .speed-select {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .speed-select:hover {
+            border-color: var(--primary-color);
+        }
+        .current-speed {
+            font-weight: bold;
+            color: var(--primary-color);
+            min-width: 40px;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            h1 img {
+                --base-size: 80px;
+            }
+            .song-details {
+                flex-direction: row;
+            }
+            .song-separator {
+                display: inline;
+            }
+            .song-title, .artist-name {
+                white-space: nowrap;
+            }
+            .song-info img {
+                --base-size: 80px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .song-info {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .song-info img {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            .playback-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .control-group {
+                justify-content: space-between;
+            }
+            .lyrics-box {
+                height: 300px; /* 移动端减小高度 */
+                padding: 15px;
+            }
+            .lyric-line {
+                padding: 10px;
+                font-size: 16px; /* 确保字体大小合适 */
+            }
+            .song-title {
+                font-size: 1.3rem;
+            }
+            .artist-name {
+                font-size: 1rem;
+            }
+        }
+        audio::-internal-media-controls-download-button {
+            display: none;
+        }
+        audio::-webkit-media-controls-panel {
+            display: flex !important;
+        }
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .tooltip-icon {
+            color: #ff9800;
+            font-size: 18px;
+            cursor: help;
+        }
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            background-color: #333;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            max-width: 300px;
+            text-align: left;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .tooltip-container:hover .tooltip {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="song-info">
+        <img src="./coverUrl.jpg" alt="未知封面" draggable="false">
+        <div class="song-details">
+            <div class="song-title">Beginning</div>
+            <div class="song-separator">-</div>
+            <div class="artist-name">猎豹移动（Cheetah Mobile）</div>
+        </div>
+    </h1>
+
+    <!-- 播放控制区域 -->
+    <div class="playback-controls">
+        <div class="control-group">
+            <label>
+                <input type="checkbox" id="loopSwitch"> 循环播放
+            </label>
+        </div>
+        <div class="control-group">
+            <label for="speedSelect">播放速度:</label>
+            <select id="speedSelect" class="speed-select">
+                <option value="0.5">0.5x</option>
+                <option value="0.75">0.75x</option>
+                <option value="1" selected>1.0x (正常)</option>
+                <option value="1.25">1.25x</option>
+                <option value="1.5">1.5x</option>
+                <option value="1.75">1.75x</option>
+                <option value="2">2.0x</option>
+            </select>
+            <div class="current-speed" id="currentSpeed">1.0x</div>
+        </div>
+    </div>
+
+    <audio id="player" controls src="./track.mp3"></audio>
+    <div id="lyricsContainer" class="lyrics-box"></div>
+
+    <div class="tooltip-container">
+        <span class="tooltip-icon">ℹ️</span>
+        <div class="tooltip">
+            当前播放器版本：v13.6.9<br>
+            更多内容，请访问
+            <a href="https:/zhuangjiunanp.github.io" style="color: #fff;">https:/zhuangjiunanp.github.io</a><br>
+            倍数控制小技巧: <br>
+            Ctrl + 0：重置为正常速度<br>
+            Ctrl + [：降低播放速度<br>
+            Ctrl + ]：增加播放速度
+        </div>
+    </div>
+
+    <script>
+        let currentLyrics = [];
+        let isUserScrolling = false;
+        let scrollTimer = null;
+        let lastHighlightIndex = -1;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const audio = document.getElementById('player');
+            const loopSwitch = document.getElementById('loopSwitch');
+            const speedSelect = document.getElementById('speedSelect');
+            const currentSpeedDisplay = document.getElementById('currentSpeed');
+            const lyricsContainer = document.getElementById('lyricsContainer');
+
+            // 移除下载功能
+            audio.controlsList = 'nodownload';
+
+            // 初始化播放速度为1.0
+            audio.playbackRate = 1.0;
+
+            // 监听音频播放结束事件
+            audio.addEventListener('ended', function() {
+                if (loopSwitch.checked) {
+                    audio.play().catch(e => {
+                        console.log('自动播放被阻止，请手动点击播放按钮', e);
+                    });
+                }
+            });
+
+            // 监听倍速选择变化
+            speedSelect.addEventListener('change', function() {
+                const speed = parseFloat(this.value);
+                audio.playbackRate = speed;
+                currentSpeedDisplay.textContent = speed.toFixed(1) + 'x';
+            
+                 // 如果正在播放，应用新的倍速
+                if (!audio.paused) {
+                    const currentTime = audio.currentTime;
+                    audio.currentTime = currentTime;
+                }
+            
+                console.log('播放速度已调整为:', speed + 'x');
+            });
+
+            // 检测用户手动滚动
+            lyricsContainer.addEventListener('scroll', function() {
+                isUserScrolling = true;
+            
+                // 清除之前的定时器
+                if (scrollTimer) clearTimeout(scrollTimer);
+            
+                // 设置定时器，一段时间后恢复自动滚动
+                scrollTimer = setTimeout(function() {
+                    isUserScrolling = false;
+                }, 2000);
+            });
+
+            // 初始化加载歌词
+            initPlayer();
+        });
+
+        async function initPlayer() {
+            try {
+                const response = await fetch('https://zhuangjiunanp.github.io/houor.lrc');
+                const content = await response.text();
+                currentLyrics = parseLyrics(content);
+                updateLyricsDisplay();
+            } catch (err) {
+                console.error('歌词加载失败:', err);
+                const container = document.getElementById('lyricsContainer');
+                container.innerHTML = '<div class="lyric-line">歌词加载失败</div>';
+            }
+        }
+
+        function parseLyrics(content) {
+            const lyricsMap = new Map();
+        
+            content.split('\n').forEach(line => {
+                const match = line.match(/\[(\d+):(\d+\.\d+)\](.*)/);
+                 if (match) {
+                    const time = parseInt(match[1]) * 60 + parseFloat(match[2]);
+                     const text = match[3].trim();
+                
+                    lyricsMap.has(time) ?
+                        lyricsMap.set(time, `${lyricsMap.get(time)}<br>${text}`) :
+                         lyricsMap.set(time, text);
+                }
+            });
+
+            return Array.from(lyricsMap.entries())
+                .sort((a, b) => a[0] - b[0])
+                .map(([time, text]) => ({ time, text }));
+        }
+
+        function updateLyricsDisplay() {
+            const container = document.getElementById('lyricsContainer');
+            container.innerHTML = currentLyrics
+                .map(({ time, text }) => `
+                    <div class="lyric-line" data-time="${time.toFixed(2)}">
+                        ${text.replace(/\n/g, '<br>')}
+                    </div>
+                `).join('');
+        }
+
+    // 歌词同步引擎 - 确保每次高亮变化都滚动
+    // 修改歌词同步引擎部分
+    document.getElementById('player').addEventListener('timeupdate', function() {
+        const currentTime = this.currentTime;
+        const lyricsLines = document.querySelectorAll('.lyric-line');
+        const container = document.getElementById('lyricsContainer');
+    
+        // 找到当前应该高亮的歌词行
+        let activeIndex = -1;
+    
+        // 从上次高亮的位置开始搜索，提高效率
+        let startIndex = Math.max(0, lastHighlightIndex - 1);
+    
+        for (let i = startIndex; i < currentLyrics.length; i++) {
+            if (currentLyrics[i].time <= currentTime) {
+                activeIndex = i;
+            } else {
+                break;
+            }
+        }
+    
+    // 如果找到了高亮行（每次都执行，不只是索引变化时）
+    if (activeIndex !== -1) {
+        // 清除所有高亮
+        lyricsLines.forEach(line => line.classList.remove('highlight'));
+        
+        // 设置新的高亮
+        lyricsLines[activeIndex].classList.add('highlight');
+        
+        // 只有在用户没有手动滚动时才自动滚动
+        if (!isUserScrolling) {
+            // 获取精确的位置信息
+            const activeLine = lyricsLines[activeIndex];
+            const containerRect = container.getBoundingClientRect();
+            const lineRect = activeLine.getBoundingClientRect();
+            
+            // 计算歌词行相对于容器的位置
+            const lineTopRelative = lineRect.top - containerRect.top + container.scrollTop;
+            
+            // 计算应该在容器中的位置（中间偏上一点）
+            const containerHeight = container.clientHeight;
+            const lineHeight = lineRect.height;
+            
+            // 计算滚动位置，让歌词显示在容器中间偏上的位置
+            const scrollPosition = lineTopRelative - (containerHeight * 0.4) + (lineHeight * 0.5);
+            
+            // 确保滚动位置在有效范围内
+            const maxScroll = container.scrollHeight - containerHeight;
+            const safeScrollPosition = Math.max(0, Math.min(scrollPosition, maxScroll));
+            
+            // 平滑滚动
+            container.scrollTo({
+                    top: safeScrollPosition,
+                    behavior: 'smooth'
+                });
+            }
+        
+            // 仍然更新最后高亮索引
+            lastHighlightIndex = activeIndex;
+        }
+    
+        // 如果歌曲刚开始播放或倒带，确保高亮正确
+        if (activeIndex === -1 && lastHighlightIndex !== -1) {
+            lyricsLines.forEach(line => line.classList.remove('highlight'));
+            lastHighlightIndex = -1;
+        }
+    });
+
+    // 键盘快捷键支持
+    document.addEventListener('keydown', function(e) {
+        const audio = document.getElementById('player');
+        const speedSelect = document.getElementById('speedSelect');
+        
+        // Ctrl + ] 增加播放速度
+        if (e.ctrlKey && e.key === ']') {
+            e.preventDefault();
+            let currentSpeed = audio.playbackRate;
+            let newSpeed = Math.min(currentSpeed + 0.25, 4.0);
+            audio.playbackRate = newSpeed;
+            speedSelect.value = newSpeed.toFixed(2);
+            document.getElementById('currentSpeed').textContent = newSpeed.toFixed(1) + 'x';
+            console.log('播放速度增加至:', newSpeed + 'x');
+        }
+        
+        // Ctrl + [ 降低播放速度
+        if (e.ctrlKey && e.key === '[') {
+            e.preventDefault();
+            let currentSpeed = audio.playbackRate;
+            let newSpeed = Math.max(currentSpeed - 0.25, 0.25);
+            audio.playbackRate = newSpeed;
+            speedSelect.value = newSpeed.toFixed(2);
+            document.getElementById('currentSpeed').textContent = newSpeed.toFixed(1) + 'x';
+            console.log('播放速度降低至:', newSpeed + 'x');
+        }
+        
+        // Ctrl + 0 重置播放速度
+        if (e.ctrlKey && e.key === '0') {
+            e.preventDefault();
+            audio.playbackRate = 1.0;
+            speedSelect.value = '1';
+            document.getElementById('currentSpeed').textContent = '1.0x';
+            console.log('播放速度已重置为正常');
+        }
+    });
+    </script>
+    <script>
+        console.log(
+            '%c' +
+            ' _____   _____   _____   _____   _____   _____   _____   _____ \n' +
+            '|  __ \\ |  __ \\ |  __ \\ |  __ \\ |  __ \\ |  __ \\ |  __ \\ |  __ \\ \n' +
+            '| |__) || |__) || |__) || |__) || |  | || |  | || |  | || |  | |\n' +
+            '|  ___/ |  ___/ |  _  / |  _  / | |  | || |  | || |  | || |  | |\n' +
+            '| |     | |     | | \\ \\ | | \\ \\ | |__| || |__| || |__| || |__| |\n' +
+            '|_|     |_|     |_|  \\_\\|_|  \\_\\ \\_____/ \\_____/ \\_____/ \\_____/ \n',
+            'font-size: 16px; color: #000; padding: 5px; white-space: pre;'
+        );
+        console.log('当前播放器版本： v13.6.9');
+        console.log('weight player: v3.12.4');
+        console.log('更多内容，请访问https:/zhuangjiunanp.github.io');
+        console.log('播放控制：');
+        console.log('- Ctrl + [ 降低播放速度');
+        console.log('- Ctrl + ] 增加播放速度');
+        console.log('- Ctrl + 0 重置播放速度');
+    </script>
+    <script src="https://zhuangjiunanp.github.io/global_package/JavaScript.js"></script>
+    <p>© 2025 触碰梦想的mc27版权所有 | 河北梦想科技有限公司</p>
+</body>
+</html>
