@@ -1,0 +1,1211 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta name="applicable-device" content="mobile">
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <meta name="Copyright" content="mc27">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="email=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-status-bar-style" content="black-translucent">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!-- 移除了 user-scalable=no 和重复的 charset -->
+    <title>下载管理器 - 更新历史</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://gcore.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 如果bootstrap在gcore.jsdelivr.net不可用，以解除以下其中一个的注释 -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <!-- <link href="https://unpkg.com/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <!-- 自定义样式：沿用原来暗黑渐变 -->
+    <style>
+        /* 防止容器溢出 */
+        .container {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* 确保表格在移动端正常显示 */
+        .table-responsive {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 防止长文本溢出 */
+        .text-break {
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        /* 确保代码块不溢出 */
+        code {
+            word-break: break-all;
+            white-space: pre-wrap;
+        }
+        
+        :root{
+            --bg-main:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
+            --bg-card:rgba(30,30,46,.8);
+            --radius:12px;
+        }
+        
+        body{
+            background:var(--bg-main);
+            color:#e0e0e0;
+            min-height:100vh;
+            padding:20px 0;
+        }
+        
+        header{
+            text-align:center;
+            margin-bottom:40px;
+            padding:30px;
+            background:rgba(0,0,0,.4);
+            border-radius:var(--radius);
+            backdrop-filter:blur(10px);
+            border:1px solid rgba(255,255,255,.1);
+        }
+        
+        .app-icon{
+            font-size: 4rem;
+            color: #4dabf7;
+            margin-bottom: 15px
+        }
+        
+        h1{
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(77,171,247,.5)
+        }
+        
+        .info-card{
+            background: var(--bg-card);
+            padding: 15px 25px;
+            border-radius: 10px;
+            border-left: 4px solid #4dabf7;
+            min-width: 200px
+        }
+        
+        .info-card h3{
+            color: #a5d8ff;
+            font-size: 1.1rem;
+            margin-bottom: 8px
+        }
+        
+        .info-card p{
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0
+        }
+        
+        .table{
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            overflow: hidden
+        }
+        
+        .table thead th{
+            background: rgba(0,20,40,.9);
+            color: #74c0fc;
+            border: none;
+            font-weight: 600
+        }
+        
+        .table td{
+            vertical-align: middle;
+            border-color: rgba(255,255,255,.05)
+        }
+        
+        .btn-dl{
+            background: linear-gradient(45deg,#20c997,#12b886);
+            color: #fff;
+            border: none
+        }
+        
+        .btn-dl: hover{
+            background: linear-gradient(45deg,#12b886,#0ca678);
+            transform: translateY(-2px)
+        }
+        
+        #backTop, #backTable {
+            position: fixed;
+            z-index: 99;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+            background: #343a40;
+            color: #fff;
+    
+            /* 添加过渡动画 */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 按钮显示时的状态 */
+        #backTop.show, #backTable.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* 按钮悬浮效果 */
+        #backTop:hover, #backTable:hover {
+            background: #495057;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 .8rem 1.5rem rgba(0,0,0,.2);
+        }
+
+        /* 调整位置 */
+        #backTop {
+            bottom: 20px;
+            right: 20px;
+        }
+
+        #backTable {
+            bottom: 80px;
+            right: 20px;
+        }
+        
+        .modal-content{
+            background: #16213e;
+            color: #e0e0e0;
+            border: 1px solid rgba(255,255,255,.1)
+        }
+        
+        .nav-tabs .nav-link{
+            color: #aaa
+        }
+        
+        .nav-tabs .nav-link.active{
+            background: #16213e;
+            color: #4dabf7;
+            border-color: rgba(255,255,255,.1)
+        }
+        
+        .tab-pane{
+            max-height: 300px;
+            overflow-y: auto
+        }
+        
+        code{
+            color: #ffaa00
+        }
+        
+        /* § 格式样式 */
+        .color-0 { 
+            color: #000000; 
+        }
+        
+        .color-1 { 
+            color: #0000AA; 
+        }
+        
+        .color-2 { 
+            color: #00AA00; 
+        }
+        
+        .color-3 { 
+            color: #00AAAA; 
+        }
+        
+        .color-4 { 
+            color: #AA0000; 
+        }
+        
+        .color-5 { 
+            color: #AA00AA; 
+        }
+        
+        .color-6 { 
+            color: #FFAA00; 
+        }
+        
+        .color-7 { 
+            color: #AAAAAA; 
+        }
+        
+        .color-8 { 
+            color: #555555; 
+        }
+        
+        .color-9 { 
+            color: #5555FF; 
+        }
+        
+        .color-a { 
+            color: #55FF55; 
+        }
+        
+        .color-b { 
+            color: #55FFFF; 
+        }
+        
+        .color-c { 
+            color: #FF5555; 
+        }
+        
+        .color-d { 
+            color: #FF55FF; 
+        }
+        
+        .color-e { 
+            color: #FFFF55; 
+        }
+        
+        .color-f { 
+            color: #FFFFFF; 
+        }
+        
+        .color-g { 
+            color: #DDD605; 
+        }
+        
+        .color-h { 
+            color: #E3D4D1; 
+        }
+        
+        .color-i {
+            color: #CECACA; 
+        }
+        
+        .color-j {
+            color: #443A3B; 
+        }
+        
+        .color-m { 
+            color: #971607; 
+        }
+        
+        .color-n { 
+            color: #B4684D; 
+        }
+        
+        .color-p { 
+            color: #DEB12D; 
+        }
+        
+        .color-q { 
+            color: #47A036; 
+        }
+        
+        .color-s { 
+            color: #2CBAA8; 
+        }
+        
+        .color-t { 
+            color: #21497B; 
+        }
+        
+        .color-u { 
+            color: #9A5CC6; 
+        }
+        
+        .format-k { 
+            font-family: monospace;
+            letter-spacing: 0.1em;
+        }
+        
+        .format-l { 
+            font-weight: bold; 
+        }
+        
+        .format-m { 
+            text-decoration: line-through; 
+        }
+        
+        .format-n { 
+            text-decoration: underline; 
+        }
+        
+        .format-o { 
+            font-style: italic; 
+        }
+        
+        .mcinline {
+            display: inline;
+        }
+        
+        /* 通知样式 */
+        .global-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            max-width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 页头 -->
+        <header>
+            <div class="app-icon"><i class="fas fa-download"></i></div>
+            <h1>下载管理器</h1>
+            <p>版本更新历史与文件列表</p>
+            <div class="d-flex flex-wrap justify-content-center gap-3" id="appInfo"></div>
+        </header>
+
+        <!-- 工具栏 -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="input-group shadow-sm">
+                    <input id="searchInput" type="text" class="form-control" placeholder="输入版本号搜索 (如: 1.0.0)">
+                    <button class="btn btn-outline-secondary" onclick="resetSearch()"><i class="fa fa-times"></i></button>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select id="tagFilter" class="form-select shadow-sm">
+                    <option value="">全部标签</option>
+                    <option value="stable">稳定版（Stable）</option>
+                    <option value="beta">测试版（Beta）</option>
+                    <option value="rc">即将发布（Rc）</option>
+                    <option value="alpha">内测版（Alpha）</option>
+                    <option value="clone">克隆版（clone）</option>
+                </select>
+            </div>
+            <div class="col-md-3 text-end">
+                <button class="btn btn-dark btn-sm" onclick="refreshData()"><i class="fa fa-sync"></i> 刷新列表</button>
+            </div>
+        </div>
+
+        <!-- 版本表格 -->
+        <div class="table-responsive">
+            <table class="table table-hover align-middle text-nowrap shadow-sm" id="verTable">
+                <thead>
+                <tr>
+                    <th style="width:25%">版本</th>
+                    <th style="width:20%">发布日期</th>
+                    <th style="width:15%">标签</th>
+                    <th style="width:15%">大小</th>
+                    <th style="width:10%" class="text-center">下载</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- 页脚 -->
+        <footer class="text-center mt-5 pt-4 pb-3 position-relative">
+            <!-- 装饰分隔线 -->
+            <div class="mb-4" style="
+                height: 1px;
+                background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(77, 171, 247, 0.3) 20%, 
+                rgba(77, 171, 247, 0.6) 50%, 
+                rgba(77, 171, 247, 0.3) 80%, 
+                transparent 100%
+            );
+        "></div>
+    
+        <!-- 数据来源 -->
+        <div class="mb-3">
+            <i class="fas fa-database me-2" style="color: #4dabf7;"></i>
+            <span class="text-light" style="
+                font-family: 'Consolas', monospace;
+                background: rgba(30, 30, 46, 0.8);
+                padding: 6px 12px;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                border: 1px solid rgba(77, 171, 247, 0.3);
+            ">
+                数据来源: http://zhuangjiunanp.github.io/Download-manger.json
+            </span>
+        </div>
+    
+        <!-- 版权信息 -->
+        <div class="text-muted" style="color: #b0b7c3 !important;">
+            <i class="far fa-copyright me-1"></i>
+            2025 下载管理器 更新历史页面
+            <span class="mx-2">|</span>
+            <i class="fas fa-code me-1"></i>
+            Made with <i class="fas fa-heart text-danger mx-1"></i>
+        </div>
+    </footer>
+    </div>
+
+    <!-- 下载详情弹窗 -->
+        <div class="modal fade" id="dlModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitle"></h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <span id="modalVersion" class="badge bg-primary me-2"></span>
+                            <span id="modalTag" class="badge"></span>
+                            <span id="modalSize" class="badge bg-secondary ms-2"></span>
+                            <span id="modalDate" class="badge bg-info ms-2"></span>
+                        </div>
+                
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-fea">更新内容</a></li>
+                            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-notes">重要说明</a></li>
+                            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-file">文件信息</a></li>
+                            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-req">系统要求</a></li>
+                        </ul>
+                        <div class="tab-content mt-3">
+                            <div class="tab-pane fade show active" id="tab-fea"></div>
+                            <div class="tab-pane fade" id="tab-notes"></div>
+                            <div class="tab-pane fade" id="tab-file"></div>
+                        <div class="tab-pane fade" id="tab-req"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-outline-secondary" onclick="copyLink()"><i class="fa fa-copy"></i> 复制直链</button>
+                    <a id="modalDlBtn" href="#" class="btn btn-sm btn-success btn-dl" download><i class="fa fa-download"></i> 下载 APK</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 返回顶部 / 返回表头 -->
+    <a href="javascript:window.scrollTo({top:0,behavior:'smooth'})" id="backTop" class="shadow"><i class="fa fa-arrow-up"></i></a>
+    <a href="#verTable" id="backTable" class="shadow"><i class="fa fa-list"></i></a>
+    <script>
+        (function(){
+          var modern = [
+            'fetch' in window,
+            'Promise' in window,
+            'includes' in String.prototype,
+            'keys' in Object,
+            'assign' in Object
+          ];
+          if (modern.indexOf(false) > -1) {
+            location.replace('error.html');
+          }
+        })();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.staticfile.org/clipboard.js/2.0.4/clipboard.min.js"></script>
+<!--     <script src="https://cdn.jsdelivr.net/npm/xe-clipboard"></script> -->
+    <script>
+        /* ---------- 工具函数 ---------- */
+        const $ = q => document.querySelector(q);
+        const $$ = q => document.querySelectorAll(q);
+        const jsonUrl = 'http://zhuangjiunanp.github.io/Download-manger.json';
+        let jsonData = [], displayList = [];
+
+        /* ---------- 日期格式化工具 ---------- */
+        function getTimePeriod(hour) {
+            if (hour >= 0 && hour < 6) return '凌晨';
+            if (hour >= 6 && hour < 9) return '早晨';
+            if (hour >= 9 && hour < 12) return '上午';
+            if (hour === 12) return '中午';
+            if (hour >= 13 && hour < 18) return '下午';
+            if (hour >= 18 && hour < 22) return '晚上';
+            return '深夜';
+        }
+
+        function formatDateForTable(dateString) {
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return dateString;
+        
+                const now = new Date();
+                const diffMs = now - date;
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                const diffMinutes = Math.floor(diffMs / (1000 * 60));
+        
+                // 相对时间显示
+                if (diffMinutes < 1) return '刚刚';
+                if (diffMinutes < 60) return `${diffMinutes}分钟前`;
+                if (diffHours < 24) return `${diffHours}小时前`;
+                if (diffDays === 1) return '昨天';
+                if (diffDays === 2) return '前天';
+                if (diffDays < 7) return `${diffDays}天前`;
+                
+                // 超过一周显示具体日期
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hour = String(date.getHours()).padStart(2, '0');
+                const minute = String(date.getMinutes()).padStart(2, '0');
+        
+                return `${month}-${day} ${hour}:${minute}`;
+            } catch (error) {
+                console.error('日期格式化错误:', error);
+                return dateString;
+            }
+        }
+
+        function formatFullDate(dateString) {
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return dateString;
+        
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hour = String(date.getHours()).padStart(2, '0');
+                const minute = String(date.getMinutes()).padStart(2, '0');
+                const second = String(date.getSeconds()).padStart(2, '0');
+                
+                // 星期几
+                const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+                const weekday = weekdays[date.getDay()];
+                
+                // 时间段（凌晨、早晨、上午、中午、下午、晚上、深夜）
+                const period = getTimePeriod(date.getHours());
+                
+                return `${year}-${month}-${day} 周${weekday} ${hour}:${minute}:${second} ${period}`;
+            } catch (error) {
+                console.error('日期格式化错误:', error);
+                return dateString;
+            }
+        }
+
+        // 增强的§格式解析函数
+        function formatText(text) {
+            if (!text) return '';
+    
+            const colorMap = {
+                '0': 'color-0', '1': 'color-1', '2': 'color-2', '3': 'color-3',
+                '4': 'color-4', '5': 'color-5', '6': 'color-6', '7': 'color-7',
+                '8': 'color-8', '9': 'color-9', 'a': 'color-a', 'b': 'color-b',
+                'c': 'color-c', 'd': 'color-d', 'e': 'color-e', 'f': 'color-f',
+                'g': 'color-g', 'h': 'color-h', 'i': 'color-i', 'j': 'color-j',
+                'm': 'color-m', 'n': 'color-n', 'p': 'color-p', 'q': 'color-q',
+                's': 'color-s', 't': 'color-t', 'u': 'color-u'
+            };
+    
+            const formatMap = {
+                'k': 'format-k', // 随机字符
+                'l': 'format-l', // 粗体
+                'm': 'format-m', // 删除线
+                'n': 'format-n', // 下划线
+                'o': 'format-o'  // 斜体
+            };
+    
+            let result = '';
+            let i = 0;
+            let activeClasses = [];
+    
+            while (i < text.length) {
+                if (text[i] === '§' && i + 1 < text.length) {
+                    const code = text[i + 1].toLowerCase();
+                    
+                    if (code === 'r') {
+                        // 重置所有样式
+                        if (activeClasses.length > 0) {
+                            result += '</span>'.repeat(activeClasses.length);
+                            activeClasses = [];
+                        }
+                        i += 2;
+                        continue;
+                    }
+            
+                    if (colorMap[code] || formatMap[code]) {
+                        // 如果有未关闭的span，先关闭
+                        if (activeClasses.length > 0) {
+                            result += '</span>';
+                    }
+                    
+                    // 收集新样式
+                    let newClasses = [];
+                    if (colorMap[code]) newClasses.push(colorMap[code]);
+                    if (formatMap[code]) newClasses.push(formatMap[code]);
+                    
+                    // 重新打开包含所有样式的span
+                    for (const cls of activeClasses) {
+                        newClasses.push(cls);
+                    }
+                    
+                    if (newClasses.length > 0) {
+                        result += `<span class="${newClasses.join(' ')}">`;
+                    }
+                
+                    activeClasses = newClasses;
+                    i += 2;
+                    continue;
+                }
+            }
+        
+                // 普通字符或未识别的§代码
+                // 普通字符或未识别的§代码 或 换行符
+                if (text[i] === '\n') {
+                    // 遇到换行符时，先关闭所有之前的样式标签
+                    if (activeClasses.length > 0) {
+                        result += '</span>';
+                    }
+                    // 插入HTML换行标签
+                    result += '<br>';
+                    // 换行后，如果之前有激活的样式，需要重新打开标签以保持样式连续性
+                    if (activeClasses.length > 0) {
+                        result += `<span class="${activeClasses.join(' ')}">`;
+                    }
+                } else {
+                    result += text[i];
+                }
+                i++;
+            }
+    
+            // 关闭所有未关闭的标签
+            if (activeClasses.length > 0) {
+                result += '</span>';
+            }
+            
+            return result;
+        }
+
+//        // 整合后的 copyLink 函数
+//        async function copyLink() {
+//            const url = $('#modalDlBtn').href;
+//    
+//            // 第1层：尝试使用 xe-clipboard
+//            try {
+//                // 确保库已加载
+//                if (typeof XEClipboard !== 'undefined' && XEClipboard.copy(url)) {
+//                    console.log('通过 xe-clipboard 复制成功');
+//                    showNotification('链接已复制到剪贴板！', 'success');
+//                    return; // 成功则直接返回
+//                } else {
+//                    // 如果库存在但复制失败，手动抛出错误进入下一层
+//                    throw new Error('xe-clipboard 复制失败');
+//                }
+//            } catch (error1) {
+//                console.log('第1层失败，尝试第2层...', error1);
+//                
+//                // 第2层：尝试使用现代 Clipboard API
+//                if (navigator.clipboard && navigator.clipboard.writeText) {
+//                    try {
+//                        await navigator.clipboard.writeText(url);
+//                        console.log('通过现代 Clipboard API 复制成功');
+//                        showNotification('链接已复制到剪贴板！', 'success');
+//                        return; // 成功则直接返回
+//                    } catch (error2) {
+//                        console.log('第2层失败，尝试第3层...', error2);
+//                        // 第2层失败，不弹窗，静默进入第3层
+//                    }
+//                }
+//                
+//                // 第3层：降级方案 - 提示用户手动复制
+//                console.log('启用第3层降级方案');
+//                showNotification('需要使用主流浏览器才可以通过提示框手动复制！', 'warning');
+//                
+//                // 使用 prompt 对话框让用户手动复制
+//                // 注意：某些浏览器或弹窗拦截器可能会阻止 prompt
+//                const isConfirmed = prompt('请手动复制以下链接：\n\n' + url + '\n\n复制后请点击“确定”。');
+//                if (isConfirmed !== null) {
+//                    showNotification('请根据浏览器提示框提示手动复制链接！', 'info');
+//                }
+//            }
+//        }
+//        
+//        function copyLink() {
+//            const url = $('#modalDlBtn').href;
+//            
+//            //   如果失败，让用户手动复制
+//            try {
+//                navigator.clipboard.writeText(url);
+//                showNotification('需要使用主流浏览器才可以通过提示框手动复制！', 'warning');
+//            } catch (e) {
+//                // 直接复制，不搞复杂兼容
+//                prompt('请手动复制链接:', url);
+//                showNotification('请跟据浏览器提示框提示手动复制链接！', 'info');
+//            }
+//        }
+//
+//        function copyToClipboard(text) {
+//            // 优先使用现代 Clipboard API
+//            if (navigator.clipboard && window.isSecureContext) {
+//                return navigator.clipboard.writeText(text).then(() => {
+//                    return true;
+//                }).catch(() => {
+//                    // 现代API失败，降级使用传统方法
+//                    return copyToClipboardFallback(text);
+//                });
+//            } else {
+//                // 不支持Clipboard API或非安全环境，使用传统方法
+//                return Promise.resolve(copyToClipboardFallback(text));
+//            }
+//        }
+
+        function copyLink() {
+    const url = $('#modalDlBtn').href;
+
+    /* ========== ClipboardJS 通道 ========== */
+    if (typeof ClipboardJS !== 'undefined') {
+        const tempButton = document.createElement('button');
+        tempButton.textContent = 'temp';          // 部分浏览器要求节点有文本
+        tempButton.style.position = 'fixed';
+        tempButton.style.left = '-9999px';        // 屏幕外，不可见但仍在 DOM
+        document.body.appendChild(tempButton);
+
+        const clipboard = new ClipboardJS(tempButton, {
+            text: () => url
+        });
+
+        clipboard.on('success', () => {
+            showNotification('链接已复制！', 'success');
+            cleanup();
+        });
+
+        clipboard.on('error', () => {
+            console.warn('ClipboardJS 失败，降级到原生 API');
+            cleanup();
+            fallbackCopy();                       // 降级
+        });
+
+        tempButton.click();                       // 触发复制
+        return;                                   // 不再走后面代码
+    }
+
+    /* ========== 降级通道 ========== */
+    fallbackCopy();
+
+    /* ========== 公用降级逻辑 ========== */
+    function fallbackCopy() {
+        // 现代 Clipboard API
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(url)
+                .then(() => showNotification('链接已复制！', 'success'))
+                .catch(() => manualPrompt());
+        } else {
+            manualPrompt();
+        }
+    }
+
+    function manualPrompt() {
+        prompt('请手动复制链接:', url);
+        showNotification('请根据浏览器提示框提示手动复制链接！', 'info');
+    }
+
+    function cleanup() {
+        clipboard.destroy();
+        tempButton.remove();
+    }
+}
+
+
+        function resetSearch(){
+            $('#searchInput').value = '';
+            $('#tagFilter').value = '';
+            filterTable();
+        }
+
+        function filterTable(){
+            const keyword = $('#searchInput').value.trim().toLowerCase();
+            const tag = $('#tagFilter').value;
+    
+            displayList = jsonData.filter(update => {
+                const versionStr = `${update.version.major}.${update.version.minor}.${update.version.patch}`;
+                const versionMatch = !keyword || versionStr.includes(keyword);
+                const tagMatch = !tag || update.version.tag === tag;
+                
+                return versionMatch && tagMatch;
+            });
+            
+            renderTable();
+        }
+
+        /* ---------- 刷新数据函数 ---------- */
+        function refreshData() {
+            const refreshBtn = document.querySelector('.col-md-3.text-end button');
+            if (refreshBtn.disabled) return;
+    
+            const originalHtml = refreshBtn.innerHTML;
+            refreshBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> 刷新中...';
+            showNotification('刷新中。。。', 'info');
+            refreshBtn.disabled = true;
+    
+            loadData().finally(() => {
+                setTimeout(() => {
+                    refreshBtn.innerHTML = originalHtml;
+                    refreshBtn.disabled = false;
+                    showNotification('已刷新下载链接！', 'success');
+                }, 500);
+            });
+        }
+
+        /* ---------- 显示通知 ---------- */
+        function showNotification(message, type = 'info') {
+            const existingNotification = document.querySelector('.global-notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            const notification = document.createElement('div');
+            notification.className = `global-notification alert alert-${type} alert-dismissible fade show`;
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+    
+            document.body.appendChild(notification);
+    
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+
+        /* ---------- 渲染应用信息 ---------- */
+        function updateAppInfo(data) {
+            $('#appInfo').innerHTML = `
+                <div class="info-card">
+                    <h3>最新版本</h3>
+                    <p>${data.app_info.latest_version}</p>
+                </div>
+                <div class="info-card">
+                    <h3>当前包名</h3>
+                    <p>${data.app_info.package_name}</p>
+                </div>
+                <div class="info-card">
+                    <h3>旧包名</h3>
+                    <p>${data.app_info.old_package_name}</p>
+            </div>`;
+        }
+
+        /* ---------- 渲染表格 ---------- */
+        function renderTable(){
+            const tbody = $('#verTable tbody');
+            if (displayList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">未找到匹配的版本</td></tr>';
+                return;
+            }
+    
+            tbody.innerHTML = displayList.map((update, index) => {
+                const version = `${update.version.major}.${update.version.minor}.${update.version.patch}`;
+                const fullDate = formatFullDate(update.release_date);
+                const shortDate = formatDateForTable(update.release_date);
+                
+                let tagBadgeClass = 'bg-secondary';
+                if (update.version.tag === 'stable') tagBadgeClass = 'bg-success';
+                else if (update.version.tag === 'beta') tagBadgeClass = 'bg-warning';
+                else if (update.version.tag === 'alpha') tagBadgeClass = 'bg-danger';
+                else if (update.version.tag === 'clone') tagBadgeClass = 'bg-info';
+        
+                return `<tr data-index="${index}">
+                    <td>
+                        <div class="fw-bold">${version}</div>
+                        <small class="text-muted">${update.description || ''}</small>
+                    </td>
+                    <td>
+                        <span title="${fullDate}">${shortDate}</span>
+                    </td>
+                    <td><span class="badge ${tagBadgeClass}">${update.version.tag}</span></td>
+                    <td>${update.download.size.formatted}</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-dl" onclick="showModal(${index})" title="查看详情并下载">
+                            <i class="fa fa-download"></i>
+                        </button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function showModal(index){
+            const update = displayList[index];
+            const version = `${update.version.major}.${update.version.minor}.${update.version.patch}`;
+            const fullDate = formatFullDate(update.release_date);
+    
+            // 设置模态框标题
+            $('#modalTitle').innerHTML = update.description;
+    
+            // 设置顶部信息
+            $('#modalVersion').textContent = version;
+            $('#modalTag').textContent = update.version.tag;
+            $('#modalTag').className = `badge ${update.version.tag === 'stable' ? 'bg-success' : 'bg-warning'}`;
+            $('#modalSize').textContent = update.download.size.formatted;
+            $('#modalDate').textContent = fullDate;
+    
+            // 更新内容
+            const featuresHtml = update.features.map(feature => {
+                const formatted = formatText(feature);
+                if (feature.trim() === '' || feature === ' ') {
+                    return '<div class="mb-2"></div>';
+                }
+                return `<div class="mb-2">${formatted}</div>`;
+            }).join('');
+            $('#tab-fea').innerHTML = featuresHtml;
+    
+            // 重要说明
+            const notesHtml = update.important_notes.map(note => {
+                const formatted = formatText(note);
+                return `<div class="mb-2">${formatted}</div>`;
+            }).join('');
+            $('#tab-notes').innerHTML = notesHtml || '<div class="text-muted">暂无重要说明</div>';
+    
+            // 文件信息
+            $('#tab-file').innerHTML = `
+                <div class="mb-3">
+                    <h6>下载链接</h6>
+                    <div class="p-2 bg-dark rounded">
+                        <code class="user-select-all text-break">${update.download.url}</code>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-2"><strong>文件大小：</strong>${update.download.size.formatted}</div>
+                        <div class="mb-2"><strong>MD5：</strong></div>
+                        <code class="user-select-all d-block mb-3">${update.download.hash.md5}</code>
+                    </div>
+                <div class="col-md-6">
+                    <div class="mb-2"><strong>SHA256：</strong></div>
+                    <code class="user-select-all d-block">${update.download.hash.sha256}</code>
+                </div>
+            </div>`;
+    
+            // 系统要求
+            $('#tab-req').innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <h6>最低要求</h6>
+                            <div><strong>系统版本：</strong>${update.requirements.min_os}</div>
+                            <div><strong>存储空间：</strong>${update.requirements.storage} MB</div>
+                            <div><strong>运行内存：</strong>${update.requirements.ram} MB</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <h6>发布信息</h6>
+                            <div><strong>发布类型：</strong>${update.release_type}</div>
+                            <div><strong>发布渠道：</strong>${update.channel}</div>
+                            <div><strong>更新ID：</strong>${update.id}</div>
+                        </div>
+                    </div>
+            </div>`;
+    
+            // 下载链接
+            $('#modalDlBtn').href = update.download.url;
+    
+            // 显示模态框
+            new bootstrap.Modal($('#dlModal')).show();
+        }
+
+        /* ---------- 数据获取 ---------- */
+        async function loadData(){
+            $('#verTable tbody').innerHTML='<tr><td colspan="5" class="text-center"><div class="spinner-border text-primary mt-3"></div><div class="mt-2">正在加载数据...</div></td></tr>';
+            try{
+                const response=await fetch(jsonUrl);
+                if(!response.ok)throw new Error(`HTTP错误: ${response.status}`);
+                const data=await response.json();
+        
+                // 更新应用信息
+                updateAppInfo(data);
+        
+                // 按版本号降序排序
+                jsonData=[...data.update_history].sort((a,b)=>{
+                    const va=a.version.major*10000+a.version.minor*100+a.version.patch;
+                    const vb=b.version.major*10000+b.version.minor*100+b.version.patch;
+                    return vb-va;
+                });
+        
+                // ---------- 这是新增的动态更新筛选器代码 ----------
+                const tagFilter = $('#tagFilter');
+                // 获取现有静态选项的值
+                const existingValues = Array.from(tagFilter.options).map(opt => opt.value);
+                // 从JSON数据中提取所有唯一的标签
+                const tags = [...new Set(jsonData.map(u => u.version.tag).filter(tag => tag))];
+        
+                // 添加JSON中存在但静态选项中没有的标签
+                tags.forEach(tag => {
+                    // 只添加不在静态选项中的标签
+                    if (!existingValues.includes(tag)) {
+                        const option = document.createElement('option');
+                        option.value = tag;
+                        // 如果tag在映射表中，使用映射的显示名称，否则使用默认格式
+                        const tagDisplayNames = {
+                            'stable': '稳定版（Stable）',
+                            'beta': '测试版（Beta）',
+                            'rc': '候选版（RC）',
+                            'alpha': '内测版（Alpha）',
+                            'clone': '克隆版（clone）'
+                        };
+                        option.textContent = tagDisplayNames[tag] || 
+                                    tag.charAt(0).toUpperCase() + tag.slice(1);
+                        tagFilter.appendChild(option);
+                    }
+                });
+                // ---------- 新增代码结束 ----------
+        
+                displayList = [...jsonData];
+                filterTable();
+                
+            } catch(error) {
+                console.error('加载数据失败:', error);
+                $('#verTable tbody').innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center text-danger py-4">
+                            <i class="fa fa-exclamation-triangle me-2"></i>
+                            加载失败: ${error.message}
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-outline-light" onclick="loadData()">
+                                    <i class="fa fa-redo"></i> 重试
+                                </button>
+                            </div>
+                        </td>
+                </tr>`;
+            }
+        }
+
+        /* ---------- 事件监听 ---------- */
+        /* ---------- 页面加载完成后的初始化 ---------- */
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+    
+            // 搜索和筛选事件
+            $('#searchInput').addEventListener('input', filterTable);
+            $('#tagFilter').addEventListener('change', filterTable);
+    
+            // 键盘快捷键
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && $('#dlModal').classList.contains('show')) {
+                    bootstrap.Modal.getInstance($('#dlModal')).hide();
+                }
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    $('#searchInput').focus();
+                }
+            });
+    
+            // 平滑滚动
+            document.querySelectorAll('#backTop, #backTable').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    let targetY = 0;
+                    if (this.id === 'backTable') {
+                        const table = document.getElementById('verTable');
+                        if (table) targetY = table.offsetTop - 20;
+                    }
+                    
+                    window.scrollTo({
+                        top: targetY,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+
+        /* ---------- 返回按钮渐入渐出 ---------- */
+        let scrollTimeout;
+        window.addEventListener('scroll', function() {
+            // 防抖处理，提高性能
+            if (scrollTimeout) {
+                clearTimeout(scrollTimeout);
+            }
+    
+            scrollTimeout = setTimeout(() => {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const backTopBtn = $('#backTop');
+                const backTableBtn = $('#backTable');
+        
+                // 返回顶部按钮
+                if (scrollTop > 200) {
+                    backTopBtn.classList.add('show');
+                } else {
+                    backTopBtn.classList.remove('show');
+                }
+        
+                // 返回表格按钮
+                if (scrollTop > 600) {
+                    backTableBtn.classList.add('show');
+                } else {
+                    backTableBtn.classList.remove('show');
+                }
+            }, 10);
+        });
+
+        // 防止模态框关闭时页面滚动
+        $('#dlModal').addEventListener('show.bs.modal', function() {
+            document.body.style.overflow = 'hidden';
+        });
+        $('#dlModal').addEventListener('hidden.bs.modal', function() {
+            document.body.style.overflow = 'auto';
+        });
+    </script>
+    <script>
+        (function() {
+        
+            // 检查User Agent
+            function isLegacyBrowser() {
+                var ua = navigator.userAgent.toLowerCase();
+        
+                // 检测IE浏览器 (IE6-IE11)
+                if (ua.indexOf('msie') !== -1 || ua.indexOf('trident') !== -1) {
+                    return true;
+                }
+
+                // 检测老旧Android WebView (Android 4.4及以下)
+                if (ua.indexOf('android') !== -1) {
+                    var androidVersionMatch = ua.match(/android\s([0-9\.]*)/);
+                    if (androidVersionMatch && androidVersionMatch[1]) {
+                        var version = parseFloat(androidVersionMatch[1]);
+                        if (version <= 4.4) {
+                            return true;
+                        }
+                    }
+                }
+        
+                // 检测老旧iOS (iOS 9及以下)
+                if (ua.indexOf('iphone') !== -1 || ua.indexOf('ipad') !== -1) {
+                    var iosVersionMatch = ua.match(/os\s([0-9_]*)/);
+                    if (iosVersionMatch && iosVersionMatch[1]) {
+                        var version = parseFloat(iosVersionMatch[1].replace(/_/g, '.'));
+                        if (version <= 9) {
+                            return true;
+                        }
+                    }
+                }
+
+                // 检测不支持现代API的浏览器
+                for (var i = 0; i < modernAPIs.length; i++) {
+                    if (!(modernAPIs[i] in window)) {
+                        return true;
+                    }
+                }
+
+                // 检查Flexbox支持 (老旧浏览器可能不支持)
+                var flexboxTest = document.createElement('div');
+                flexboxTest.style.display = 'flex';
+                flexboxTest.style.flexDirection = 'column';
+                document.body.appendChild(flexboxTest);
+                var isFlexSupported = flexboxTest.offsetHeight > 0;
+                document.body.removeChild(flexboxTest);
+
+                if (!isFlexSupported) {
+                    return true;
+                }
+
+                return false;
+            }
+
+            // 执行检查
+            if (isLegacyBrowser()) {
+                // 保存用户本来要访问的页面
+                try {
+                    sessionStorage.setItem('originalUrl', window.location.href);
+                } catch(e) {
+                    // 如果sessionStorage不可用，使用cookie
+                    document.cookie = "originalUrl=" + encodeURIComponent(window.location.href) + "; path=/";
+                }
+        
+                // 跳转到兼容页面
+                window.location.href = 'error.html';
+            }
+        })();
+    </script>
+    </body>
+</html>

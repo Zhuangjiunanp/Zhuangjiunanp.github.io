@@ -1,0 +1,148 @@
+{
+  "app_info": {
+    "name": "下载管理器",
+    "old_package_name": "com.example.downloader",
+    "package_name": "com.downloader.app",
+    "latest_version": "6.3.2"
+  },
+  "update_history": [
+    {
+      "id": "update_001",
+      "version": {
+        "major": 1,
+        "minor": 0,
+        "patch": 0,
+        "tag": "stable"
+      },
+      "channel": "official github",
+      "release_type": "major",
+      "release_date": "2025-11-22T23:59:24Z",
+      "download": {
+        "url": "https://github.com/Zhuangjiunanp/Download-Manager/releases/download/DownloadManager/resources_arm64_x64_1.0.apk",
+        "size": {
+          "bytes": 53867908,
+          "formatted": "51.37M"
+        },
+        "hash": {
+          "md5": "5dc226431094234a8820c99ec7716af9",
+          "sha256": "11583344aa7617cf364b2322c56b09b91b36ca7e367e118041a8a21a0a2f3aff"
+        }
+      },
+      "description": "v1.0版本正式发布",
+      "features": [
+        "下载管理器v1.0版本正式发布",
+        "更新内容：",
+        "仅添加非常简单的 gui 和交互功能",
+        "仅提供部分下载内容开放"
+      ],
+      "requirements": {
+        "min_os": "Android 4.1.x (Jelly Beam)",
+        "storage": 100,
+        "ram": 3024
+      },
+      "important_notes": [
+        "暂不支持API 16 Android 4.1.x (Jelly Beam)以下系统"
+      ]
+    },
+    {
+      "id": "update_002",
+      "version": {
+        "major": 6,
+        "minor": 3,
+        "patch": 1,
+        "tag": "stable"
+      },
+      "channel": "official github",
+      "release_type": "major",
+      "release_date": "2025-11-22T23:59:24Z",
+      "download": {
+        "url": "https://github.com/Zhuangjiunanp/Download-Manager/releases/download/activity/28-6.3.1.apk",
+        "size": {
+          "bytes": 40893934,
+          "formatted": "39.00M"
+        },
+        "hash": {
+          "md5": "c94de34e556486e3550fe4c4472e34ed",
+          "sha256": "6c2219c6d78e9477540391f30f450ff51ffa1957b5de01cd282498a8cb2277d5"
+        }
+      },
+      "description": "v6.3.1版本发布",
+      "features": [
+        "更新内容：§r",
+        "更新设置图标§r",
+        "§l 三大亮点: §r",
+        "§3 支持在WebView下载§r",
+        "§3 支持1~8线程下载§r",
+        "§3下载历史记录，让您一眼爱上它！§r",
+        " ",
+        "§l 它有哪些功能: ",
+        "§e 恢复出厂设置，让你直接删除所有浏览信息。§r",
+        "§g 出厂自带music播放器，让你随时都可以听音乐。§r",
+        "§o §m 自由更改你的小语种，让学习变为可能。§r",
+        "§o §d 想自由调试？没问题！\n让你自由地在下载中漫游！§r",
+        ""
+      ],
+      "requirements": {
+        "min_os": "Android 4.1.x (Jelly Beam)",
+        "storage": 1024,
+        "ram": 3024
+      },
+      "important_notes": [
+        "暂不支持API 16 Android 4.1.x (Jelly Beam)以下系统",
+        "§m 修改了文件结构§r",
+        "§l §n §o 请注意备份数据§r",
+        "§o 包名由com.example.downloader正式更名为com.downloader.app，因此可以同步存在§r"
+      ]
+    },
+    {
+      "id": "update_003",
+      "version": {
+        "major": 6,
+        "minor": 88,
+        "patch": 1,
+        "tag": "clone"
+      },
+      "channel": "official github",
+      "release_type": "major",
+      "release_date": "2025-11-22T23:59:24Z",
+      "download": {
+        "url": "https://github.com/Zhuangjiunanp/Download-Manager/releases/downlod/activity/28-6.3.1.apk",
+        "size": {
+          "bytes": 4089334,
+          "formatted": "39.0M"
+        },
+        "hash": {
+          "md5": "c94de34e556486e3550fe4c4472e34pd",
+          "sha256": "6c2219c6d78e9477540391f30f450ff51ffa1957b5de01cd282498l8cb2277d5"
+        }
+      },
+      "description": "v6.3.1版本发布",
+      "features": [
+        "更新内容：§r",
+        "更新设置图标§r",
+        "§l 三大亮点: §r",
+        "§3 支持在WebView下载§r",
+        "§3 支持1~8线程下载§r",
+        "§3下载历史记录，让您一眼爱上它！§r",
+        " ",
+        "§l 它有哪些功能: ",
+        "§e 恢复出厂设置，让你直接删除所有浏览信息。§r",
+        "§g 出厂自带music播放器，让你随时都可以听音乐。§r",
+        "§o §m 自由更改你的小语种，让学习变为可能。§r",
+        "§o §d 想自由调试？没问题！\n让你自由地在下载中漫游！§r",
+        ""
+      ],
+      "requirements": {
+        "min_os": "Android 4.1.x (Jelly Beam)",
+        "storage": 1024,
+        "ram": 3024
+      },
+      "important_notes": [
+        "暂不支持API 16 Android 4.1.x (Jelly Beam)以下系统",
+        "§m 修改了文件结构§r",
+        "§l §n §o 请注意备份数据§r",
+        "§o 包名由com.example.downloader正式更名为com.downloader.app，因此可以同步存在§r"
+      ]
+    }
+  ]
+}
